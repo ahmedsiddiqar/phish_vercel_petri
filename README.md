@@ -1,80 +1,104 @@
-# Phishing Simulation — Next.js for Vercel
+# 🎣 Petridish Phishing Awareness Tracker
 
-Converted from Streamlit. Full-stack Next.js app with API routes and Supabase.
+A Next.js app for running internal phishing simulations. Deploy to Vercel, connect to Supabase, and start tracking who clicks your test links.
 
-## Project Structure
+---
+
+## 🚀 Setup Guide
+
+### 1. Create a Supabase Project
+
+1. Go to [supabase.com](https://supabase.com) → New Project
+2. Once created, go to **SQL Editor**
+3. Paste and run the contents of `sql/schema.sql`
+4. Copy your project credentials from **Settings → API**:
+   - Project URL (`NEXT_PUBLIC_SUPABASE_URL`)
+   - `anon` public key (`NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+   - `service_role` secret key (`SUPABASE_SERVICE_ROLE_KEY`)
+
+---
+
+### 2. Deploy to Vercel
+
+1. Push this project to a GitHub repo
+2. Go to [vercel.com](https://vercel.com) → Import Project
+3. Under **Environment Variables**, add:
+
+| Key | Value |
+|-----|-------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Your Supabase service role key |
+| `ADMIN_PASSWORD` | A strong password for the admin panel |
+
+4. Deploy!
+
+---
+
+### 3. Using the App
+
+#### Admin Panel
+Visit `https://your-domain.vercel.app/admin`
+
+- Log in with your `ADMIN_PASSWORD`
+- **Create campaigns** — give each simulation a name and slug
+- **Copy tracking links** — e.g. `https://your-domain.vercel.app/t/it-alert-q2`
+- **Send the link** to employees in a phishing test email
+- **View who clicked** with timestamps, IP addresses, and browser info
+
+#### Tracking Links
+Each link follows the pattern: `/t/[slug]`
+
+When an employee clicks:
+1. Their visit is logged to Supabase (IP, user agent, timestamp, referrer)
+2. They see a brief "loading" animation
+3. Then a reveal: **"You just got phished"**
+4. Then the full phishing awareness education page
+
+---
+
+## 📁 Project Structure
 
 ```
 pages/
-  index.tsx          # Warning / education page  (?token=...&email=...)
-  admin.tsx          # Admin dashboard           (/admin)
+  index.jsx          — Blank landing (nothing to see here)
+  admin.jsx          — Admin dashboard
+  t/[slug].jsx       — Tracking + awareness page
   api/
-    track.ts         # Logs clicks
-    recipient.ts     # Fetches a single recipient
-    admin/
-      recipients.ts  # GET all recipients (password-protected)
-      add-recipients.ts # POST — bulk add + generate links
-      clear.ts       # POST — wipe all data
+    track.js         — POST: log a click
+    campaigns.js     — GET/POST/PATCH/DELETE campaigns
+    clicks.js        — GET: fetch clicks for a campaign
 lib/
-  supabase.ts        # Supabase helpers + business logic
+  supabase.js        — Supabase client setup
+sql/
+  schema.sql         — Run this in Supabase SQL Editor
 ```
 
-## Deploy to Vercel
+---
 
-### 1. Push to GitHub
-```bash
-git init
-git add .
-git commit -m "init"
-gh repo create phishing-sim --public --push
+## 🔒 Security Notes
+
+- The `SUPABASE_SERVICE_ROLE_KEY` is **server-side only** — never use it in client code
+- The admin panel uses a simple password header. For production, consider upgrading to proper auth (Supabase Auth, NextAuth, etc.)
+- IP addresses are logged for awareness purposes — ensure this complies with your company's privacy policy
+- RLS policies prevent unauthorized data access at the database level
+
+---
+
+## 📧 Example Phishing Email Template
+
 ```
+Subject: [URGENT] Action Required — IT Security Update
 
-### 2. Import in Vercel
-Go to https://vercel.com/new → Import your repo.
+Hi [Name],
 
-### 3. Add Environment Variables
-In Vercel → Settings → Environment Variables, add:
+We've detected unusual activity on your Petridish account.
+Please verify your identity immediately:
 
-| Name             | Value                          |
-|------------------|--------------------------------|
-| SUPABASE_URL     | https://xxxx.supabase.co       |
-| SUPABASE_KEY     | your-supabase-key              |
-| ADMIN_PASSWORD   | your-secure-password           |
+→ Click here to verify: https://your-domain.vercel.app/t/it-alert-q2
 
-### 4. Supabase Tables
-Run this SQL in Supabase → SQL Editor:
+Failure to verify within 24 hours may result in account suspension.
 
-```sql
-create table if not exists recipients (
-  id         bigserial primary key,
-  token      text unique not null,
-  email      text not null,
-  campaign   text,
-  clicked    boolean default false,
-  click_ts   timestamptz,
-  source     text,
-  added_ts   timestamptz default now()
-);
-
-create table if not exists events (
-  id          bigserial primary key,
-  token       text,
-  email_param text,
-  event_type  text,
-  ts          timestamptz default now()
-);
+IT Security Team
+Petridish
 ```
-
-## Usage
-
-| URL                              | Purpose                        |
-|----------------------------------|--------------------------------|
-| `/`                              | Landing (no tracking params)   |
-| `/?token=abc123`                 | Token tracking                 |
-| `/?email=budi@co.com`            | Email tracking                 |
-| `/?token=abc123&email=budi@...`  | Both (recommended)             |
-| `/admin`                         | Admin dashboard                |
-
-## Changing the Admin Password
-Set `ADMIN_PASSWORD` in Vercel environment variables. It is hashed server-side with SHA-256.
-Never commit `.env` files.
