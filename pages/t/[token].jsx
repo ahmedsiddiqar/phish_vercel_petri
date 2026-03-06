@@ -193,7 +193,7 @@ export default function TrackPersonPage() {
         <div className="cta-block">
           <div className="cta-title">Complete your Security Awareness Training</div>
           <div className="cta-sub">Takes 10 minutes · Required for all Petridish employees</div>
-          <a href="https://petridish.com/security-training" className="cta-btn">Start Training →</a>
+          <a href="https://docs.google.com/document/d/1lmuZMHCbS22IJ1uq93nWek1RzpXj9JRpMfXK7UUiWhU/edit?usp=sharing" className="cta-btn">Start Training →</a>
         </div>
 
         <footer>© {new Date().getFullYear()} Petridish · Security Team · This was an internal phishing simulation</footer>
