@@ -5,26 +5,23 @@ import Head from 'next/head'
 export default function TrackPage() {
   const router = useRouter()
   const { slug } = router.query
-  const [tracked, setTracked] = useState(false)
   const [phase, setPhase] = useState('hook') // hook → reveal → educate
 
   useEffect(() => {
     if (!slug) return
-    if (tracked) return
 
-    setTracked(true)
-
+    // Fire-and-forget tracking — page animation never depends on this
     fetch('/api/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ slug }),
     }).catch(console.error)
 
-    // Sequence the reveal
+    // Sequence the reveal — runs unconditionally once slug is available
     const t1 = setTimeout(() => setPhase('reveal'), 1800)
     const t2 = setTimeout(() => setPhase('educate'), 3800)
     return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [slug, tracked])
+  }, [slug]) // removed `tracked` — it was causing the effect to re-run and cancel the timers
 
   return (
     <>

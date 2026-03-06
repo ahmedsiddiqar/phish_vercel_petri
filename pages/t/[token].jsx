@@ -6,12 +6,10 @@ export default function TrackPersonPage() {
   const router = useRouter()
   const { token } = router.query
   const [phase, setPhase] = useState('hook')
-  const [tracked, setTracked] = useState(false)
   const [recipientName, setRecipientName] = useState('')
 
   useEffect(() => {
-    if (!token || tracked) return
-    setTracked(true)
+    if (!token) return
 
     fetch('/api/track-person', {
       method: 'POST',
@@ -27,7 +25,7 @@ export default function TrackPersonPage() {
     const t1 = setTimeout(() => setPhase('reveal'), 1800)
     const t2 = setTimeout(() => setPhase('educate'), 3800)
     return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [token, tracked])
+  }, [token]) // removed `tracked` — was cancelling timers on re-render
 
   return (
     <>
