@@ -162,7 +162,7 @@ export default function TrackPersonPage() {
         <div className="section-label">Red flags you may have missed</div>
         <div className="cards">
           {[
-            { icon: '🔗', title: 'Suspicious URL', body: 'Real internal links always use petridish.com domains. Hover over links before clicking to inspect the full URL — attackers often use lookalike domains.' },
+            { icon: '🔗', title: 'Suspicious URL', body: 'There are no internal links yet for petridish. it only just now got approved for a server ' },
             { icon: '📧', title: 'Unexpected sender', body: 'Always verify sender addresses by checking the full email header, not just the display name. Spoofed names are trivial to fake.' },
             { icon: '⚡', title: 'Urgency tactics', body: 'Phishing emails create urgency — "Act now", "Your account will be suspended". Slow down and verify independently before clicking anything.' },
             { icon: '🔑', title: 'Request for credentials', body: 'Petridish IT will never ask for your password via email, link, or chat message. Any unexpected login page should be treated as suspicious.' },
@@ -189,13 +189,6 @@ export default function TrackPersonPage() {
             </div>
           ))}
         </div>
-
-        <div className="cta-block">
-          <div className="cta-title">Complete your Security Awareness Training</div>
-          <div className="cta-sub">Takes 10 minutes · Required for all Petridish employees</div>
-          <a href="https://docs.google.com/document/d/1lmuZMHCbS22IJ1uq93nWek1RzpXj9JRpMfXK7UUiWhU/edit?usp=sharing" className="cta-btn">Start Training →</a>
-        </div>
-
         <footer>© {new Date().getFullYear()} Petridish · Security Team · This was an internal phishing simulation</footer>
       </div>
     </>
